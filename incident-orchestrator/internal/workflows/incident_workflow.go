@@ -46,7 +46,8 @@ func IncidentWorkflow(ctx workflow.Context, service string) (*models.IncidentSta
 			MaximumAttempts:    5,
 		},
 	}
-	ctx = workflow.WithActivityOptions(ctx, activityOpts)
+	// Temporal contexts are immutable. assign new context with the options attached.
+	ctx = workflow.WithActivityOptions(ctx, activityOpts) 
 
 	// Register query handler for workflow state
 	err := workflow.SetQueryHandler(ctx, QueryState, func() (*models.IncidentState, error) {
