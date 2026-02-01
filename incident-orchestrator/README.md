@@ -6,32 +6,11 @@ A Temporal-based workflow orchestrator demonstrating incident lifecycle manageme
 
 This project models an incident response system using Temporal's core features:
 - **Durable Execution**: Workflow state survives worker restarts
-- **Timers**: Time-based escalation (5 min if not acknowledged)
+- **Timers**: Time-based escalation (30s if not acknowledged)
 - **Signals**: Human interaction (AddAlert, Ack, Resolve)
-- **Activities**: Side effects with retries (notifications, audit logs)
+- **Activities**: Side Effects with retries (notifications)
 
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Temporal Server                              │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │              IncidentWorkflow                            │    │
-│  │                                                          │    │
-│  │  State: service, status, alerts[], escalationLevel      │    │
-│  │                                                          │    │
-│  │  Signals:                 Timer:                         │    │
-│  │  - AddAlert(alertID)      - 5 min → escalate if OPEN    │    │
-│  │  - Ack(responder)                                        │    │
-│  │  - Resolve(responder)     Activities:                    │    │
-│  │                           - SendNotification             │    │
-│  │  Query:                                                  │    │
-│  │  - state                                                 │    │
-│  └─────────────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-## What This Demo Does NOT Include
+## This Demo does not include
 
 - Kafka or message consumers
 - Database schema or deduplication  
@@ -42,7 +21,7 @@ All side effects are stubbed/logged.
 
 ## Prerequisites
 
-- Go 1.21+
+- Go 1.23
 - [Temporal CLI](https://docs.temporal.io/cli) installed
 
 ## Quick Start
@@ -94,11 +73,6 @@ go run cmd/starter/main.go -cmd=ack -service=payment-api -responder=alice
 go run cmd/starter/main.go -cmd=resolve -service=payment-api -responder=alice
 ```
 
-Or use the dev script:
-```bash
-./scripts/dev.sh demo
-```
-
 ## Testing Durability
 
 1. Start an incident workflow
@@ -129,7 +103,6 @@ incident-orchestrator/
 │       └── notify.go       # Notification (stubbed)
 └── scripts/
     ├── run-temporal.sh     # Start Temporal dev server
-    └── dev.sh              # Development helper
 ```
 
 ## Signals
